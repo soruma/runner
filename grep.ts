@@ -7,15 +7,14 @@ export class GrepService {
       const grepSetting = (await SettingLoader.execute()).grep;
 
     for await (const dirEntry of Deno.readDir(directory)) {
+      if (grepSetting.ignore.files.includes(dirEntry.name)) {
+        continue;
+      }
+      if (grepSetting.ignore.folders.includes(dirEntry.name)) {
+        continue;
+      }
+
       const fullPath = path.join(directory, dirEntry.name);
-
-      if (grepSetting.ignore.files.includes(fullPath)) {
-        continue;
-      }
-      if (grepSetting.ignore.folders.includes(fullPath)) {
-        continue;
-      }
-
       if (dirEntry.isFile) {
         const text: string = await Deno.readTextFile(fullPath);
         text.split("\n").forEach((line, index) => {
