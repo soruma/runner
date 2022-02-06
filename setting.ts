@@ -23,11 +23,11 @@ export class SettingLoader {
       grep: {
         ignore: {
           files: [
-            "~$"
+            "~$",
+            "ignore_file",
           ],
           folders: [
-            ".git",
-            "node_modules"
+            "ignore_folder"
           ]
         }
       }

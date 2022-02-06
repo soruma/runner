@@ -7,10 +7,20 @@ export class GrepService {
       const grepSetting = (await SettingLoader.execute()).grep;
 
     for await (const dirEntry of Deno.readDir(directory)) {
-      if (grepSetting.ignore.files.includes(dirEntry.name)) {
-        continue;
+      let ignoreHit: boolean = false;
+      for (const ignoreFile of grepSetting.ignore.files) {
+        if (dirEntry.name.match(ignoreFile)) {
+          ignoreHit = true;
+          break;
+        }
       }
-      if (grepSetting.ignore.folders.includes(dirEntry.name)) {
+      for (const ignoreFolder of grepSetting.ignore.folders) {
+        if (dirEntry.name.match(ignoreFolder)) {
+          ignoreHit = true
+          break;
+        }
+      }
+      if (ignoreHit) {
         continue;
       }
 
