@@ -1,6 +1,6 @@
 import Denomander from "https://deno.land/x/denomander@0.9.1/mod.ts";
 import { Git, GitService } from "./git.ts";
-import { Grep, GrepService } from "./grep.ts"
+import { Grep, GrepService } from "./grep.ts";
 
 const program = new Denomander({
   app_name: "Commands runner",
@@ -18,8 +18,8 @@ program
 program
   .command("grep [args...]", "Run grep without unnecessary directory searches")
   // deno-lint-ignore no-explicit-any
-  .action(({ args }: any) => {
-    const grep = new Grep(new GrepService());
+  .action(async({ args }: any) => {
+    const grep = new Grep(await GrepService.init());
     grep.grep(args[0]);
   });
 

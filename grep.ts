@@ -1,26 +1,17 @@
 import * as path from "https://deno.land/std@0.120.0/path/mod.ts";
 import * as Colors from "https://deno.land/std@0.120.0/fmt/colors.ts";
-import { SettingLoader } from "./setting.ts";
+import { GrepSetting, SettingLoader } from "./setting.ts";
 
 export class GrepService {
-  async grep(pattern: string, directory: string) {
-      const grepSetting = (await SettingLoader.execute()).grep;
+  grepSetting: GrepSetting;
 
+  private constructor(grepSetting: GrepSetting) {
+    this.grepSetting = grepSetting;
+  }
+
+  public async grep(pattern: string, directory: string) {
     for await (const dirEntry of Deno.readDir(directory)) {
-      let ignoreHit: boolean = false;
-      for (const ignoreFile of grepSetting.ignore.files) {
-        if (dirEntry.name.match(ignoreFile)) {
-          ignoreHit = true;
-          break;
-        }
-      }
-      for (const ignoreFolder of grepSetting.ignore.folders) {
-        if (dirEntry.name.match(ignoreFolder)) {
-          ignoreHit = true
-          break;
-        }
-      }
-      if (ignoreHit) {
+      if (this.hitIgnoreList(dirEntry)) {
         continue;
       }
 
@@ -37,6 +28,30 @@ export class GrepService {
         this.grep(pattern, fullPath);
       }
     }
+  }
+
+  public hitIgnoreList(dirEntry: Deno.DirEntry) {
+    let hit = false;
+    for (const ignoreFile of this.grepSetting.ignore.files) {
+      if (dirEntry.name.match(ignoreFile)) {
+        hit = true;
+        break;
+      }
+    }
+    for (const ignoreFolder of this.grepSetting.ignore.folders) {
+      if (dirEntry.name.match(ignoreFolder)) {
+        hit = true
+        break;
+      }
+    }
+
+    return hit;
+  }
+
+  public static init = async () => {
+    const grepSetting: GrepSetting = (await SettingLoader.execute()).grep;
+
+    return new GrepService(grepSetting);
   }
 }
 
