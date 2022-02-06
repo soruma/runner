@@ -1,5 +1,5 @@
 import { Rhum } from "https://deno.land/x/rhum@v1.1.12/mod.ts";
-import { Git, GitService } from "./git.ts";
+import { Git, GitService } from "../../src/git.ts";
 
 Rhum.testPlan("git.ts", () => {
   Rhum.testSuite("fetch()", () => {

@@ -1,6 +1,6 @@
 import Denomander from "https://deno.land/x/denomander@0.9.1/mod.ts";
-import { Git, GitService } from "./git.ts";
-import { Grep, GrepService } from "./grep.ts";
+import { Git, GitService } from "./src/git.ts";
+import { Grep, GrepService } from "./src/grep.ts";
 
 const program = new Denomander({
   app_name: "Commands runner",
