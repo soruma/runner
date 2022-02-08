@@ -14,7 +14,7 @@ function defaultGrepSetting() {
   };
 }
 
-function defaultSetting() {
+export function defaultSetting() {
   return {
     grep: defaultGrepSetting()
   };
@@ -24,9 +24,9 @@ export type GrepSetting = ReturnType<typeof defaultGrepSetting>;
 export type Setting = ReturnType<typeof defaultSetting>;
 
 export class SettingLoader {
-  public static execute(): Promise<Setting> {
+  execute(): Promise<Setting> {
     return new Promise((resolve, _reject) => {
-      Deno.readTextFile(SettingLoader.settingFilePath()).then((value) => {
+      Deno.readTextFile(this.settingFilePath()).then((value) => {
         resolve(JSON.parse(value) as Setting);
       }).catch(() => {
         resolve(defaultSetting());
@@ -34,7 +34,7 @@ export class SettingLoader {
     });
   }
 
-  public static settingFilePath(): string {
+  settingFilePath(): string {
     return path.join(Deno.env.get("HOME")!, ".runner.json");
   }
 }

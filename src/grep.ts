@@ -49,7 +49,8 @@ export class GrepService {
   }
 
   public static init = async () => {
-    const grepSetting: GrepSetting = (await SettingLoader.execute()).grep;
+    const settingLoader = new SettingLoader();
+    const grepSetting: GrepSetting = (await settingLoader.execute()).grep;
 
     return new GrepService(grepSetting);
   }
