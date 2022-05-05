@@ -16,7 +16,9 @@ export class GrepService {
       }
 
       const fullPath = path.join(directory, dirEntry.name);
-      if (dirEntry.isFile) {
+      if (dirEntry.isDirectory) {
+        this.grep(pattern, fullPath);
+      } else {
         const text: string = await Deno.readTextFile(fullPath);
         text.split("\n").forEach((line, index) => {
           if (line.includes(pattern)) {
@@ -24,8 +26,6 @@ export class GrepService {
             console.log(`${fullPath}: ${index}: ${coloredLine}`);
           }
         });
-      } else {
-        this.grep(pattern, fullPath);
       }
     }
   }
