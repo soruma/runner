@@ -2,6 +2,18 @@ import * as path from "https://deno.land/std@0.120.0/path/mod.ts";
 import * as Colors from "https://deno.land/std@0.120.0/fmt/colors.ts";
 import { GrepSetting, SettingLoader } from "./setting.ts";
 
+class GrepServiceOutput {
+  constructor(
+    public filePath: string,
+    public lineNumber: number,
+    public line: string,
+  ) {}
+
+  toString(): string {
+    return `${this.filePath}:${this.lineNumber}: ${this.line}`;
+  }
+}
+
 export class GrepService {
   grepSetting: GrepSetting;
 
@@ -9,7 +21,9 @@ export class GrepService {
     this.grepSetting = grepSetting;
   }
 
-  public async grep(pattern: string, directory: string) {
+  public async grep(pattern: string, directory: string): Promise<Array<GrepServiceOutput>> {
+    const result = new Array<GrepServiceOutput>();
+
     for await (const dirEntry of Deno.readDir(directory)) {
       if (this.hitIgnoreList(dirEntry)) {
         continue;
@@ -17,17 +31,25 @@ export class GrepService {
 
       const fullPath = path.join(directory, dirEntry.name);
       if (dirEntry.isDirectory) {
-        this.grep(pattern, fullPath);
+        result.push(...await this.grep(pattern, fullPath));
       } else {
         const text: string = await Deno.readTextFile(fullPath);
         text.split("\n").forEach((line, index) => {
           if (line.includes(pattern)) {
             const coloredLine = line.replace(pattern, Colors.yellow(pattern));
-            console.log(`${fullPath}: ${index}: ${coloredLine}`);
+  
+            const output: GrepServiceOutput = new GrepServiceOutput(
+              fullPath,
+              index,
+              coloredLine,
+            );
+            result.push(output);
           }
         });
       }
     }
+
+    return result;
   }
 
   public hitIgnoreList(dirEntry: Deno.DirEntry) {
@@ -60,6 +82,10 @@ export class Grep {
   constructor(private service: GrepService) {}
 
   async grep(pattern: string, directory = ".") {
-    await this.service.grep(pattern, directory);
+    const outputs = await this.service.grep(pattern, directory);
+
+    outputs.forEach((output) => {
+      console.info(output.toString());
+    });
   }
 }
