@@ -4,6 +4,7 @@
     "test": "deno test --allow-read --allow-run"
   },
   "imports": {
+    "@cliffy/command": "jsr:@cliffy/command@^1.0.0-rc.7",
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/fmt": "jsr:@std/fmt@^1.0.7",
     "@std/path": "jsr:@std/path@^1.0.9",

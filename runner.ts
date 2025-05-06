@@ -1,26 +1,29 @@
-import Denomander from "https://deno.land/x/denomander@0.9.1/mod.ts";
+import { Command } from "@cliffy/command";
+
 import { Git, GitService } from "./src/git.ts";
 import { Grep, GrepService } from "./src/grep.ts";
 
-const program = new Denomander({
-  app_name: "Commands runner",
-  app_description: "Utility commands runner",
-  app_version: "1.1.0",
-});
-
-program
-  .command("gbd", "Remove unnecessary git branches")
-  .action(() => {
+const gbd = new Command()
+  .name("gbd")
+  .description("Remove unnecessary git branches")
+  .action(async () => {
     const git = new Git(new GitService());
-    git.branchDelete();
+    await git.branchDelete();
   });
 
-program
-  .command("grep [args...]", "Run grep without unnecessary directory searches")
-  // deno-lint-ignore no-explicit-any
-  .action(async ({ args }: any) => {
+const grep = new Command()
+  .name("grep")
+  .description("Run grep without unnecessary directory searches")
+  .arguments("<pattern:string>")
+  .action(async (_option, pattern: string) => {
     const grep = new Grep(await GrepService.init());
-    grep.grep(args[0]);
+    grep.grep(pattern);
   });
 
-program.parse(Deno.args);
+await new Command()
+  .name("runner")
+  .version("1.1.0")
+  .description("Utility commands runner")
+  .command("gbd", gbd)
+  .command("grep", grep)
+  .parse(Deno.args);
