@@ -1,39 +1,36 @@
 import { describe, it } from "jsr:@std/testing/bdd";
 import { expect } from "jsr:@std/expect";
+import { assertSpyCalls, stub } from "jsr:@std/testing/mock";
 
 import * as path from "jsr:@std/path";
 
-import { defaultSetting, Setting, SettingLoader } from "../../src/setting.ts";
+import { defaultSetting, SettingLoader } from "../../src/setting.ts";
 
-class StubbedSettingLoader extends SettingLoader {
-  dir: string;
-
-  constructor(dir: string) {
-    super();
-
-    this.dir = dir;
-  }
-
-  settingFilePath(): string {
-    return path.join(this.dir, ".runner.json");
-  }
-}
-
-describe("git.ts", () => {
+describe("SettingLoader", () => {
   describe("execute()", () => {
     it("When configuration file does not exist, load default settings", async () => {
-      const settingStubbed = new StubbedSettingLoader("dummy");
+      const settingLoader = new SettingLoader();
+      const settingFilePathStub = stub(settingLoader, "settingFilePath", () => {
+        return "dummy";
+      });
 
-      expect(await settingStubbed.execute()).toEqual(defaultSetting());
+      expect(await settingLoader.execute()).toEqual(defaultSetting());
+      assertSpyCalls(settingFilePathStub, 1);
     });
 
     it("When configuration file exists, read the configuration file", async () => {
-      const settingStubbed = new StubbedSettingLoader("tests/testdata");
-      const settingFileData = JSON.parse(
-        await Deno.readTextFile(settingStubbed.settingFilePath()),
-      ) as Setting;
+      const settingLoader = new SettingLoader();
+      const settingFilePathStub = stub(settingLoader, "settingFilePath", () => {
+        return path.join(Deno.cwd(), "tests", "testdata", ".runner.json");
+      });
 
-      expect(await settingStubbed.execute()).toEqual(settingFileData);
+      const setting = await Deno.readTextFile(
+        path.join(Deno.cwd(), "tests", "testdata", ".runner.json"),
+      );
+      const jsonSetting = JSON.parse(setting);
+
+      expect(await settingLoader.execute()).toEqual(jsonSetting);
+      assertSpyCalls(settingFilePathStub, 1);
     });
   });
 });
