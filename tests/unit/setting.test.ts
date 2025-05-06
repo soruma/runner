@@ -1,5 +1,8 @@
-import { Rhum } from "https://deno.land/x/rhum@v1.1.12/mod.ts";
-import * as path from "https://deno.land/std@0.120.0/path/mod.ts";
+import { describe, it } from "jsr:@std/testing/bdd";
+import { expect } from "jsr:@std/expect";
+
+import * as path from "jsr:@std/path";
+
 import { defaultSetting, Setting, SettingLoader } from "../../src/setting.ts";
 
 class StubbedSettingLoader extends SettingLoader {
@@ -16,35 +19,21 @@ class StubbedSettingLoader extends SettingLoader {
   }
 }
 
-Rhum.testPlan("setting.ts", () => {
-  Rhum.testSuite("execute()", () => {
-    Rhum.testCase(
-      "When configuration file does not exist, load default settings",
-      async () => {
-        const settingStubbed = new StubbedSettingLoader("dummy");
+describe("git.ts", () => {
+  describe("execute()", () => {
+    it("When configuration file does not exist, load default settings", async () => {
+      const settingStubbed = new StubbedSettingLoader("dummy");
 
-        Rhum.asserts.assertEquals(
-          await settingStubbed.execute(),
-          defaultSetting(),
-        );
-      },
-    );
+      expect(await settingStubbed.execute()).toEqual(defaultSetting());
+    });
 
-    Rhum.testCase(
-      "When configuration file exists, read the configuration file",
-      async () => {
-        const settingStubbed = new StubbedSettingLoader("tests/testdata");
-        const settingFileData = JSON.parse(
-          await Deno.readTextFile(settingStubbed.settingFilePath()),
-        ) as Setting;
+    it("When configuration file exists, read the configuration file", async () => {
+      const settingStubbed = new StubbedSettingLoader("tests/testdata");
+      const settingFileData = JSON.parse(
+        await Deno.readTextFile(settingStubbed.settingFilePath()),
+      ) as Setting;
 
-        Rhum.asserts.assertEquals(
-          await settingStubbed.execute(),
-          settingFileData,
-        );
-      },
-    );
+      expect(await settingStubbed.execute()).toEqual(settingFileData);
+    });
   });
 });
-
-Rhum.run();

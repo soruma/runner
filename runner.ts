@@ -18,7 +18,7 @@ program
 program
   .command("grep [args...]", "Run grep without unnecessary directory searches")
   // deno-lint-ignore no-explicit-any
-  .action(async({ args }: any) => {
+  .action(async ({ args }: any) => {
     const grep = new Grep(await GrepService.init());
     grep.grep(args[0]);
   });

@@ -1,4 +1,4 @@
-import * as path from "https://deno.land/std@0.120.0/path/mod.ts";
+import * as path from "jsr:@std/path";
 
 function defaultGrepSetting() {
   return {
@@ -8,15 +8,15 @@ function defaultGrepSetting() {
         "ignore_file",
       ],
       folders: [
-        "ignore_folder"
-      ]
-    }
+        "ignore_folder",
+      ],
+    },
   };
 }
 
 export function defaultSetting() {
   return {
-    grep: defaultGrepSetting()
+    grep: defaultGrepSetting(),
   };
 }
 

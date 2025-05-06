@@ -20,8 +20,8 @@ deno uninstall runner
 deno test --allow-env --allow-write --allow-read --allow-run
 ```
 
-Testing for grep has not been implemented yet.
-🚧 The test must be done manually. 🚧
+Testing for grep has not been implemented yet. 🚧 The test must be done
+manually. 🚧
 
 ```sh
 pushd tests

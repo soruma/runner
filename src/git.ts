@@ -1,38 +1,39 @@
 export class GitService {
   async fetch() {
-    const p: Deno.Process = Deno.run({
-      cmd: ["git", "fetch", "-p"],
+    const command: Deno.Command = new Deno.Command("git", {
+      args: ["fetch", "-p"],
     });
-    const status: Deno.ProcessStatus = await p.status();
-    p.close();
-    if (!status.success) {
+    const { success } = await command.output();
+    if (!success) {
       throw new Error("Faild git fetch.");
     }
   }
 
   async mergedBranchs(): Promise<string[]> {
-    const p: Deno.Process = Deno.run({
-      cmd: ["git", "branch", "--format", "%(refname:short)", "--merged"],
+    const command: Deno.Command = new Deno.Command("git", {
+      args: ["branch", "--format", "%(refname:short)", "--merged"],
       stdout: "piped",
     });
+    const { success, stdout } = await command.output();
+    if (!success) {
+      throw new Error("Faild git branch --merged.");
+    }
+
     const decodedOutput = new TextDecoder()
-      .decode(await p.output())
+      .decode(stdout)
       .trim();
-    p.close();
 
     return decodedOutput.split("\n");
   }
 
-  branchDelete(branch: string) {
-    const p: Deno.Process = Deno.run({
-      cmd: ["git", "branch", "-d", branch],
+  async branchDelete(branch: string) {
+    const command: Deno.Command = new Deno.Command("git", {
+      args: ["branch", "-d", branch],
     });
-
-    p.status().then((result) => {
-      if (!result.success) {
-        throw new Error(`Faild ${branch} branch delete.`);
-      }
-    });
+    const { success } = await command.output();
+    if (!success) {
+      throw new Error(`Faild ${branch} branch delete.`);
+    }
   }
 
   isBranchToLeave(branch: string): boolean {

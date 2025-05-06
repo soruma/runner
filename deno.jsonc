@@ -1,0 +1,12 @@
+{
+  "tasks": {
+    "dev": "deno run --watch runner.ts",
+    "test": "deno test --allow-read --allow-run"
+  },
+  "imports": {
+    "@std/expect": "jsr:@std/expect@^1.0.15",
+    "@std/fmt": "jsr:@std/fmt@^1.0.7",
+    "@std/path": "jsr:@std/path@^1.0.9",
+    "@std/testing": "jsr:@std/testing@^1.0.11"
+  }
+}
