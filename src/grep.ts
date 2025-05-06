@@ -91,5 +91,7 @@ export class Grep {
     outputs.forEach((output) => {
       console.info(output.toString());
     });
+
+    return outputs;
   }
 }

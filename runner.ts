@@ -2,6 +2,8 @@ import { Command } from "@cliffy/command";
 
 import { Git, GitService } from "./src/git.ts";
 import { Grep, GrepService } from "./src/grep.ts";
+import { Find, FindService } from "./src/find.ts";
+import { RemoveHiddenFiles } from "./src/remove-hidden-files.ts";
 
 const gbd = new Command()
   .name("gbd")
@@ -20,10 +22,22 @@ const grep = new Command()
     grep.grep(pattern);
   });
 
+const removeHiddenFiles = new Command()
+  .name("remove-hidden-files")
+  .description("Remove hidden files from the current directory")
+  .option("-p, --path <path:string>", "Path to search", { default: Deno.cwd() })
+  .action(async (options) => {
+    const find = new Find(new FindService());
+    const hiddenFiles = await find.findHiddenFiles(options.path);
+    const removeHiddenFiles = new RemoveHiddenFiles();
+    removeHiddenFiles.remove(hiddenFiles);
+  });
+
 await new Command()
   .name("runner")
   .version("1.1.0")
   .description("Utility commands runner")
   .command("gbd", gbd)
   .command("grep", grep)
+  .command("remove-hidden-files", removeHiddenFiles)
   .parse(Deno.args);
