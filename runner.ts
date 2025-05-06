@@ -5,7 +5,7 @@ import { Grep, GrepService } from "./src/grep.ts";
 const program = new Denomander({
   app_name: "Commands runner",
   app_description: "Utility commands runner",
-  app_version: "1.0.0",
+  app_version: "1.1.0",
 });
 
 program
