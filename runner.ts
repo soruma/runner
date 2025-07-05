@@ -16,7 +16,7 @@ const grep = new Command()
   .name("grep")
   .description("Run grep without unnecessary directory searches")
   .arguments("<pattern:string>")
-  .action(async (_option, pattern: string) => {
+  .action(async (_option: unknown, pattern: string) => {
     const grep = new Grep(await GrepService.init());
     grep.grep(pattern);
   });
@@ -25,7 +25,7 @@ const removeHiddenFiles = new Command()
   .name("remove-hidden-files")
   .description("Remove hidden files from the current directory")
   .option("-p, --path <path:string>", "Path to search", { default: Deno.cwd() })
-  .action(async (options) => {
+  .action(async (options: { path: string }) => {
     const removeHiddenFiles = await RemoveHiddenFiles.create(options.path);
     removeHiddenFiles.remove();
   });
