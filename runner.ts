@@ -2,7 +2,6 @@ import { Command } from "@cliffy/command";
 
 import { Git, GitService } from "./src/git.ts";
 import { Grep, GrepService } from "./src/grep.ts";
-import { Find, FindService } from "./src/find.ts";
 import { RemoveHiddenFiles } from "./src/remove-hidden-files.ts";
 
 const gbd = new Command()
@@ -27,10 +26,8 @@ const removeHiddenFiles = new Command()
   .description("Remove hidden files from the current directory")
   .option("-p, --path <path:string>", "Path to search", { default: Deno.cwd() })
   .action(async (options) => {
-    const find = new Find(new FindService());
-    const hiddenFiles = await find.findHiddenFiles(options.path);
-    const removeHiddenFiles = new RemoveHiddenFiles();
-    removeHiddenFiles.remove(hiddenFiles);
+    const removeHiddenFiles = await RemoveHiddenFiles.create(options.path);
+    removeHiddenFiles.remove();
   });
 
 await new Command()
